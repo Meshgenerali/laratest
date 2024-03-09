@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\WebAuthn\WebAuthnLoginController;
+use App\Http\Controllers\WebAuthn\WebAuthnRegisterController;
 use Laragear\WebAuthn\Http\Routes as WebAuthnRoutes;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\WebAuthnAuthentication;
@@ -34,5 +36,12 @@ Route::middleware([
 Route::get('/redirect', [HomeController::class, 'redirect'])->middleware('auth', 'verified');
 
 // WebAuthn Routes
+use App\Http\Controllers\WebAuthnController;
+
+Route::middleware('auth')->group(function () {
+    Route::post('/webauthn/attest/options', [WebAuthnRegisterController::class, 'options']);
+    Route::post('/webauthn/attest', [WebAuthnRegisterController::class, 'register']);
+});
+
 
 

@@ -1,7 +1,7 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+          
         </x-slot>
 
         <x-validation-errors class="mb-4" />
@@ -68,8 +68,10 @@
         </form>
 
   <!-- Passwordless registration button -->
-  <button class="ms-4" id="passwordless-register-btn">Passwordless Register</button>
-
+  <!-- <button class="ms-4" id="passwordless-register-btn">Passwordless Register</button> -->
+    <x-button class="ms-4"  id="passwordless-register-btn">
+            Register without password
+    </x-button>
     </x-authentication-card>
 
     <!-- Script for passwordless login -->
@@ -83,7 +85,11 @@
                     return;
                 }
 
-                const { success } = await Webpass.attest("/webauthn/register/options", "/webauthn/register");
+               // Register credentials:
+                const { credential, success, error } = await Webpass.attest(
+                    "/webauthn/attest/options", "/webauthn/attest"
+                );
+
 
                 if (success) {
                     window.location.replace("/dashboard");
