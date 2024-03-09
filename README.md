@@ -26,18 +26,18 @@ to get started and run this project locally in your device, you need to have:
 
 ## Getting started
 
-having the environment setup, clone the project and navigate to the project folder.
+Having the environment setup, clone the project and navigate to the project folder in your local environment.
 
-locate .env file in the and configure your database connection. adjust database name, password and username. be keen not to mess.
+Locate .env file in the root of your project and configure your database connection. Adjust database name, password and username. be keen not to mess.
 
-after successful database connection, run migrations on your terminal. use the command below:
-    php artisan migrate
+After successful database connection, open terminal on the root of your project folder then run database migrations. Use command below:
+    - php artisan migrate
 
-after successful migration, you can now start the local server by the following command
-      php artisan serve
+After successful migration, you can now start the local server by the following command
+     - php artisan serve
 
 on another terminal run
-      npm run dev
+     - npm run dev
 
 the project runs at localhost port 8000. in your browser, access localhost:8000 and see the project.
 you can now click login or register to authenticate or register a new user.
