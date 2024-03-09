@@ -21,6 +21,7 @@ to get started and run this project locally in your device, you need to have:
 - PHP latest version installed in your device 
 - mysql database 
 - local server
+- access to a terminal
 
 
 ## Getting started
