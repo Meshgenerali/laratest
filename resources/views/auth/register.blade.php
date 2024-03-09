@@ -66,5 +66,32 @@
                 </x-button>
             </div>
         </form>
+
+  <!-- Passwordless registration button -->
+  <button class="ms-4" id="passwordless-register-btn">Passwordless Register</button>
+
     </x-authentication-card>
+
+    <!-- Script for passwordless login -->
+    <script src="https://cdn.jsdelivr.net/npm/@laragear/webpass@1/dist/webpass.js" defer></script>
+
+    <script>
+        document.getElementById('passwordless-register-btn').addEventListener('click', async () => {
+            try {
+                if (Webpass.isUnsupported()) {
+                    alert("Your browser doesn't support WebAuthn.");
+                    return;
+                }
+
+                const { success } = await Webpass.attest("/webauthn/register/options", "/webauthn/register");
+
+                if (success) {
+                    window.location.replace("/dashboard");
+                }
+            } catch (error) {
+                console.error('Error during WebAuthn registration:', error);
+            }
+        });
+    </script>
+
 </x-guest-layout>

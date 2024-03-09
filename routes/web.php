@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use Laragear\WebAuthn\Http\Routes as WebAuthnRoutes;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\WebAuthnAuthentication;
+
 
 
 /*
@@ -28,4 +32,7 @@ Route::middleware([
 });
 
 Route::get('/redirect', [HomeController::class, 'redirect'])->middleware('auth', 'verified');
+
+// WebAuthn Routes
+
 
