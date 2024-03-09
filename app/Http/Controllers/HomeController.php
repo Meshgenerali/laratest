@@ -38,5 +38,12 @@ class HomeController extends Controller
         }
     }
 
+    // function to redirect webauthn authenticated user
+
+    public function redirection() {
+
+        return view('home.userpage');
+    }
+
     
 }

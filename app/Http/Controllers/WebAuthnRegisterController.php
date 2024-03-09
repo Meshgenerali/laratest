@@ -8,6 +8,8 @@ use Laragear\WebAuthn\Http\Requests\AttestationRequest;
 use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 use function response;
 
+
+
 class WebAuthnRegisterController
 {
     /**
@@ -33,7 +35,9 @@ class WebAuthnRegisterController
      */
     public function register(AttestedRequest $request): Response
     {
+
         $request->save();
+        
 
         return response()->noContent();
     }

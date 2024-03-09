@@ -34,6 +34,8 @@ Route::middleware([
 });
 
 Route::get('/redirect', [HomeController::class, 'redirect'])->middleware('auth', 'verified');
+Route::get('/redirection', [HomeController::class, 'redirection']);
+
 
 // WebAuthn Routes
 use App\Http\Controllers\WebAuthnController;
@@ -41,7 +43,11 @@ use App\Http\Controllers\WebAuthnController;
 Route::middleware('auth')->group(function () {
     Route::post('/webauthn/attest/options', [WebAuthnRegisterController::class, 'options']);
     Route::post('/webauthn/attest', [WebAuthnRegisterController::class, 'register']);
+    Route::post('/webauthn/login/options', [WebAuthnLoginController::class, 'options']);
+    Route::post('/webauthn/login', [WebAuthnLoginController::class, 'login']);
+   
 });
+
 
 
 
