@@ -7,60 +7,51 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## laravel user registration and authentication
+## Laravel user registration and authentication website
 
-the project is a simple website that impliments user registration using laravel jetstream to register and authenticate users traditionally. i also implimented passwordless register abd login using webauthn pckage. users can chooce the way to be authenticated either traditionally or by us of fingerprint credentials.
+The project is a simple website that impliments user registration using laravel jetstream to register and authenticate users traditionally. I also implimented passwordless register and login using webauthn pckage. users can chooce which way to be authenticated either traditionally or by us of fingerprint credentials.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+when a user chooces to use traditonal system, email verification is done to be sure that the user trying to register really he is. an email is sent to the new user with a verify button.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+the webauthn technique captures the user browser fingerprints. when a user clicks passwordless register, the project checks if the browser supports webauthn authentication. if yes, it captures as much info as it can to identify the user. now when the user tries to login passwordless, the code checks if there exists a use with credential like the ones submitted and handles the responses corectly. due to security i implimented a clone featuer to check for cloned credentials and disable them.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requirements
+to get started and run this project locally in your device, you need to have:
+- PHP latest version installed in your device 
+- mysql database 
+- local server
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Getting started
 
-## Laravel Sponsors
+having the environment setup, clone the project and navigate to the project folder.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+locate .env file in the and configure your database connection. adjust database name, password and username. be keen not to mess.
 
-### Premium Partners
+after successful database connection, run migrations on your terminal. use the command below:
+    php artisan migrate
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+after successful migration, you can now start the local server by the following command
+      php artisan serve
+
+on another terminal run
+      npm run dev
+
+the project runs at localhost port 8000. in your browser, access localhost:8000 and see the project.
+you can now click login or register to authenticate or register a new user.
+after a successful login, a log out button appears on the header to confirm that the user is logged in. one can choose to logout or stay logged in.
+
+
+
+
+## Note
+
+  -  instructions given are to run the code locally. if you want to test all features you can deploy it depending on the documentaion of your hosting provider
+  -  webauthn is not supported by all browsers. to test this make sure you have latest version of your browser and updated your system for latest releases.
+
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Thank you for considering contributing laravel user registration and authentication project.
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
