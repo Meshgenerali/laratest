@@ -39,7 +39,7 @@
       <!-- end why section -->          
 
       <div class="cpy_">
-         <p class="mx-auto">© 2021 All Rights Reserved By <a href="https://x.com/generali_mesh?t=zLYfMoRb2awif2-6eFtNag&s=09">Meshack Malonza</a><br>
+         <p class="mx-auto">© 2021 All Rights Reserved By <a href="/">website rights</a><br>
          
          </p>
       </div>
