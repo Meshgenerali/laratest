@@ -46,7 +46,7 @@
         </form>
         <br>
 
-        <x-button class="ms-4"  id="passwordless-register-btn">
+        <x-button class="ms-4"  id="passwordless-register-btn" style="margin-left: 20%;">
             Login without password
         </x-button>
 
