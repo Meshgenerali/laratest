@@ -20,6 +20,11 @@
                            <button type="submit" class="btn btn-danger">Logout</button>
                         </form>
                         </li>
+
+                        <!-- <li class="nav-item" style="margin-left: 20px;">
+                           <a class="btn btn-info" href="/user/profile">profile</a>
+                        </li> -->
+                        
                         @else
 
                         <li class="nav-item">

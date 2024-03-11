@@ -9,11 +9,12 @@
 
 ## Laravel user registration and authentication website
 
-The project is a simple website that impliments user registration using laravel jetstream to register and authenticate users traditionally. I also implimented passwordless register and login using webauthn package. users can chooce which way to be authenticated either traditionally or by us of fingerprint credentials.
+- The project is a simple website that impliments user registration using laravel jetstream to register and authenticate users traditionally. I also implimented passwordless register and login using webauthn package. users can chooce which way to be authenticated either traditionally or by us of fingerprint credentials.
 
-when a user chooces to use traditonal system, email verification is done to be sure that the user trying to register really he is. an email is sent to the new user with a verify button.
+- when a user chooces to use traditonal system, email verification is done to be sure that the user trying to register really he is. an email is sent to the new user with a verify button.
 
-the webauthn technique captures the user browser fingerprints. when a user clicks passwordless register, the project checks if the browser supports webauthn authentication. if yes, it captures as much info as it can to identify the user. now when the user tries to login passwordless, the code checks if there exists a user with credentials similar to the ones submitted and handles the responses corectly. Due to security i implimented a clone featuer to check for cloned credentials and disable them.
+- the webauthn technique captures the user browser fingerprints. when a user clicks passwordless register, the project checks if the browser supports webauthn authentication. if yes, it captures as much info as it can to identify the user. now when the user tries to login passwordless, the code checks if there exists a user with credentials similar to the ones submitted and handles the responses corectly. Due to security i implimented a clone featuer to check for cloned credentials and disable them.
+
 
 
 ## Requirements
@@ -54,5 +55,10 @@ after a successful login, a log out button appears on the header to confirm that
 
 ## Contributing
 
-Thank you for considering contributing laravel user registration and authentication project.
+Thank you for considering contributing laravel user registration and authentication project. Any insights will be higly appreaciated.
+
+
+## bugs and vulnerabilities
+
+Be free to report any bugs and vulnereabilities found to me.
 
