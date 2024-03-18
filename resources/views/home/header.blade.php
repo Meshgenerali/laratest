@@ -14,6 +14,12 @@
                         @if (Route::has('login'))
 
                         @auth
+
+
+                        <li class="nav-item">
+                           <a class="btn btn-info" id="passwordless-register-btn" style="margin-right: 16px; color:#fff;">Add Fingerprints</a>
+                        </li>
+
                         <li class="nav-item">
                         <form action="/logout" method="post">
                            @csrf

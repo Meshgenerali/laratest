@@ -47,14 +47,17 @@
         <br>
 
         <x-button class="ms-4"  id="passwordless-register-btn" style="margin-left: 20%;">
-            Login without password
+            Use Fingerprints
         </x-button>
 
         <div id="alertContainer" class="fixed inset-x-0 top-0 z-50 flex justify-center mt-4 hidden">
+
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <strong class="font-bold">Alert:</strong>
+               
                 <span class="block sm:inline" id="alertMessage">Your browser doesn't support WebAuthn.</span>
+
             </div>
+
         </div>
 
 

@@ -66,77 +66,9 @@
                 </x-button>
             </div>
         </form>
-        <br>
-
-  <!-- Passwordless registration button -->
-  <!-- <button class="ms-4" id="passwordless-register-btn">Passwordless Register</button> -->
-    <x-button class="ms-4"  id="passwordless-register-btn" style="margin-left: 14%;">
-            Register without password
-    </x-button>
-
-    <div id="alertContainer" class="fixed inset-x-0 top-0 z-50 flex justify-center mt-4 hidden">
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Alert:</strong>
-            <span class="block sm:inline" id="alertMessage">Your browser doesn't support WebAuthn.</span>
-        </div>
-    </div>
-
 
     </x-authentication-card>
 
-    <!-- Script for passwordless register -->
-    <script src="https://cdn.jsdelivr.net/npm/@laragear/webpass@1/dist/webpass.js" defer></script>
 
-    <script>
-        document.getElementById('passwordless-register-btn').addEventListener('click', async () => {
-            try {
-                if (Webpass.isUnsupported()) {
-                    showAlert("Your browser doesn't support WebAuthn.", 3000);
-                    return;
-                }
-
-               // Register credentials:
-                const { credential, success, error } = await Webpass.attest(
-                    "/webauthn/attest/options", "/webauthn/attest"
-                );
-
-
-                if (success) {
-                    window.location.replace("{{ url('/redirection') }}");
-                }
-            } catch (error) {
-                // Handle error
-                console.error('Error during WebAuthn registration:', error);
-                showAlert('Error during WebAuthn registration: ' + error.message, 3000);
-            }
-        });
-    </script>
-
-
-<script>
-    function showAlert(message, duration = 3000) {
-    const alertContainer = document.getElementById('alertContainer');
-    const alertMessage = document.getElementById('alertMessage');
-    
-    // Update alert message
-    alertMessage.textContent = message;
-    
-    // Show alert
-    alertContainer.classList.remove('hidden');
-
-        // Hide alert after specified duration
-        setTimeout(() => {
-        hideAlert();
-    }, duration);
-}
-
-function hideAlert() {
-    const alertContainer = document.getElementById('alertContainer');
-    
-    // Hide alert
-    alertContainer.classList.add('hidden');
-}
-
-</script>
 
 </x-guest-layout>
