@@ -8,7 +8,9 @@ use Laragear\WebAuthn\Attestation\Validator\AttestationValidation;
 use Laragear\WebAuthn\Exceptions\AttestationException;
 use Laragear\WebAuthn\Exceptions\DataException;
 use Ramsey\Uuid\Uuid;
+
 use function parse_url;
+
 use const PHP_URL_HOST;
 
 /**
@@ -18,8 +20,6 @@ class MakeWebAuthnCredential
 {
     /**
      * Create a new pipe instance.
-     *
-     * @param  \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(protected Repository $config)
     {
@@ -29,9 +29,6 @@ class MakeWebAuthnCredential
     /**
      * Handle the incoming Attestation Validation.
      *
-     * @param  \Laragear\WebAuthn\Attestation\Validator\AttestationValidation  $validation
-     * @param  \Closure  $next
-     * @return mixed
      * @throws \Laragear\WebAuthn\Exceptions\AttestationException
      */
     public function handle(AttestationValidation $validation, Closure $next): mixed
@@ -57,9 +54,6 @@ class MakeWebAuthnCredential
 
     /**
      * Returns a public key from the credentials as a PEM string.
-     *
-     * @param  \Laragear\WebAuthn\Attestation\Validator\AttestationValidation  $validation
-     * @return string
      */
     protected function getPublicKeyAsPem(AttestationValidation $validation): string
     {

@@ -24,10 +24,9 @@ use Symfony\Component\Translation\Translator as BaseTranslator;
  */
 class Translator extends BaseTranslator implements WarmableInterface
 {
-    protected $container;
-    protected $loaderIds;
-
-    protected $options = [
+    protected ContainerInterface $container;
+    protected array $loaderIds;
+    protected array $options = [
         'cache_dir' => null,
         'debug' => false,
         'resource_files' => [],
@@ -94,10 +93,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         parent::__construct($defaultLocale, $formatter, $this->options['cache_dir'], $this->options['debug'], $this->options['cache_vary']);
     }
 
-    /**
-     * @return string[]
-     */
-    public function warmUp(string $cacheDir): array
+    public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         // skip warmUp when translator doesn't use cache
         if (null === $this->options['cache_dir']) {
@@ -118,10 +114,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         return [];
     }
 
-    /**
-     * @return void
-     */
-    public function addResource(string $format, mixed $resource, string $locale, ?string $domain = null)
+    public function addResource(string $format, mixed $resource, string $locale, ?string $domain = null): void
     {
         if ($this->resourceFiles) {
             $this->addResourceFiles();
@@ -129,10 +122,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         $this->resources[] = [$format, $resource, $locale, $domain];
     }
 
-    /**
-     * @return void
-     */
-    protected function initializeCatalogue(string $locale)
+    protected function initializeCatalogue(string $locale): void
     {
         $this->initialize();
         parent::initializeCatalogue($locale);
@@ -151,10 +141,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         }
     }
 
-    /**
-     * @return void
-     */
-    protected function initialize()
+    protected function initialize(): void
     {
         if ($this->resourceFiles) {
             $this->addResourceFiles();

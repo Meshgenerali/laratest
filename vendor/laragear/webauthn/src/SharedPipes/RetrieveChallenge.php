@@ -20,8 +20,6 @@ abstract class RetrieveChallenge
 
     /**
      * Create a new pipe instance.
-     *
-     * @param  \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(protected Repository $config)
     {
@@ -30,16 +28,12 @@ abstract class RetrieveChallenge
 
     /**
      * Handle the incoming Assertion Validation.
-     *
-     * @param  \Laragear\WebAuthn\Attestation\Validator\AttestationValidation|\Laragear\WebAuthn\Assertion\Validator\AssertionValidation  $validation
-     * @param  \Closure  $next
-     * @return mixed
      */
     public function handle(AttestationValidation|AssertionValidation $validation, Closure $next): mixed
     {
         $validation->challenge = $this->retrieveChallenge($validation->request);
 
-        if (!$validation->challenge) {
+        if (! $validation->challenge) {
             static::throw($validation, 'Challenge does not exist.');
         }
 
@@ -48,16 +42,13 @@ abstract class RetrieveChallenge
 
     /**
      * Pulls an Attestation challenge from the Cache.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Laragear\WebAuthn\Challenge|null
      */
     protected function retrieveChallenge(Request $request): ?Challenge
     {
         /** @var \Laragear\WebAuthn\Challenge|null $challenge */
         $challenge = $request->session()->pull($this->config->get('webauthn.challenge.key'));
 
-        if (!$challenge || $challenge->hasExpired()) {
+        if (! $challenge || $challenge->hasExpired()) {
             return null;
         }
 

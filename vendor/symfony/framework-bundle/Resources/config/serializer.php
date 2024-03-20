@@ -42,11 +42,11 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\FormErrorNormalizer;
 use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Serializer\Normalizer\MimeMessageNormalizer;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ProblemNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\Normalizer\TranslatableNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Normalizer\UnwrappingDenormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -113,6 +113,10 @@ return static function (ContainerConfigurator $container) {
         ->set('serializer.normalizer.uid', UidNormalizer::class)
             ->tag('serializer.normalizer', ['priority' => -890])
 
+        ->set('serializer.normalizer.translatable', TranslatableNormalizer::class)
+            ->args(['$translator' => service('translator')])
+            ->tag('serializer.normalizer', ['priority' => -890])
+
         ->set('serializer.normalizer.form_error', FormErrorNormalizer::class)
             ->tag('serializer.normalizer', ['priority' => -915])
 
@@ -127,9 +131,6 @@ return static function (ContainerConfigurator $container) {
             ])
             ->tag('serializer.normalizer', ['priority' => -1000])
 
-        ->alias(ObjectNormalizer::class, 'serializer.normalizer.object')
-            ->deprecate('symfony/serializer', '6.2', 'The "%alias_id%" service alias is deprecated, type-hint against "'.NormalizerInterface::class.'" or implement "'.NormalizerAwareInterface::class.'" instead.')
-
         ->set('serializer.normalizer.property', PropertyNormalizer::class)
             ->args([
                 service('serializer.mapping.class_metadata_factory'),
@@ -138,9 +139,6 @@ return static function (ContainerConfigurator $container) {
                 service('serializer.mapping.class_discriminator_resolver')->ignoreOnInvalid(),
                 null,
             ])
-
-        ->alias(PropertyNormalizer::class, 'serializer.normalizer.property')
-            ->deprecate('symfony/serializer', '6.2', 'The "%alias_id%" service alias is deprecated, type-hint against "'.NormalizerInterface::class.'" or implement "'.NormalizerAwareInterface::class.'" instead.')
 
         ->set('serializer.denormalizer.array', ArrayDenormalizer::class)
             ->tag('serializer.normalizer', ['priority' => -990])
@@ -212,12 +210,8 @@ return static function (ContainerConfigurator $container) {
                     ->factory([HtmlErrorRenderer::class, 'isDebug'])
                     ->args([service('request_stack'), param('kernel.debug')]),
             ])
-    ;
 
-    if (interface_exists(\BackedEnum::class)) {
-        $container->services()
-            ->set('serializer.normalizer.backed_enum', BackedEnumNormalizer::class)
+        ->set('serializer.normalizer.backed_enum', BackedEnumNormalizer::class)
             ->tag('serializer.normalizer', ['priority' => -915])
-        ;
-    }
+    ;
 };

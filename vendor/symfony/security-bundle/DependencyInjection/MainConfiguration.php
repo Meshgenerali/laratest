@@ -65,7 +65,6 @@ class MainConfiguration implements ConfigurationInterface
                 ->end()
                 ->booleanNode('hide_user_not_found')->defaultTrue()->end()
                 ->booleanNode('erase_credentials')->defaultTrue()->end()
-                ->booleanNode('enable_authenticator_manager')->setDeprecated('symfony/security-bundle', '6.2', 'The "%node%" option at "%path%" is deprecated.')->defaultTrue()->end()
                 ->arrayNode('access_decision_manager')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -145,7 +144,7 @@ class MainConfiguration implements ConfigurationInterface
                             ->scalarNode('host')->defaultNull()->end()
                             ->integerNode('port')->defaultNull()->end()
                             ->arrayNode('ips')
-                                ->beforeNormalization()->ifString()->then(function ($v) { return [$v]; })->end()
+                                ->beforeNormalization()->ifString()->then(fn ($v) => [$v])->end()
                                 ->prototype('scalar')->end()
                             ->end()
                             ->arrayNode('attributes')
@@ -154,7 +153,7 @@ class MainConfiguration implements ConfigurationInterface
                             ->end()
                             ->scalarNode('route')->defaultNull()->end()
                             ->arrayNode('methods')
-                                ->beforeNormalization()->ifString()->then(function ($v) { return preg_split('/\s*,\s*/', $v); })->end()
+                                ->beforeNormalization()->ifString()->then(fn ($v) => preg_split('/\s*,\s*/', $v))->end()
                                 ->prototype('scalar')->end()
                             ->end()
                             ->scalarNode('allow_if')->defaultNull()->end()
@@ -162,7 +161,7 @@ class MainConfiguration implements ConfigurationInterface
                         ->fixXmlConfig('role')
                         ->children()
                             ->arrayNode('roles')
-                                ->beforeNormalization()->ifString()->then(function ($v) { return preg_split('/\s*,\s*/', $v); })->end()
+                                ->beforeNormalization()->ifString()->then(fn ($v) => preg_split('/\s*,\s*/', $v))->end()
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
@@ -191,10 +190,15 @@ class MainConfiguration implements ConfigurationInterface
         ;
 
         $firewallNodeBuilder
-            ->scalarNode('pattern')->end()
+            ->scalarNode('pattern')
+                ->beforeNormalization()
+                    ->ifArray()
+                    ->then(fn ($v) => sprintf('(?:%s)', implode('|', $v)))
+                ->end()
+            ->end()
             ->scalarNode('host')->end()
             ->arrayNode('methods')
-                ->beforeNormalization()->ifString()->then(function ($v) { return preg_split('/\s*,\s*/', $v); })->end()
+                ->beforeNormalization()->ifString()->then(fn ($v) => preg_split('/\s*,\s*/', $v))->end()
                 ->prototype('scalar')->end()
             ->end()
             ->booleanNode('security')->defaultTrue()->end()
@@ -217,14 +221,6 @@ class MainConfiguration implements ConfigurationInterface
                 ->treatTrueLike([])
                 ->canBeUnset()
                 ->beforeNormalization()
-                    ->ifTrue(fn ($v): bool => isset($v['csrf_token_generator']) && !isset($v['csrf_token_manager']))
-                    ->then(function (array $v): array {
-                        $v['csrf_token_manager'] = $v['csrf_token_generator'];
-
-                        return $v;
-                    })
-                ->end()
-                ->beforeNormalization()
                     ->ifTrue(fn ($v): bool => \is_array($v) && (isset($v['csrf_token_manager']) xor isset($v['enable_csrf'])))
                     ->then(function (array $v): array {
                         if (isset($v['csrf_token_manager'])) {
@@ -240,13 +236,6 @@ class MainConfiguration implements ConfigurationInterface
                     ->booleanNode('enable_csrf')->defaultNull()->end()
                     ->scalarNode('csrf_token_id')->defaultValue('logout')->end()
                     ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
-                    ->scalarNode('csrf_token_generator')
-                        ->setDeprecated(
-                            'symfony/security-bundle',
-                            '6.3',
-                            'The "%node%" option is deprecated. Use "csrf_token_manager" instead.'
-                        )
-                    ->end()
                     ->scalarNode('csrf_token_manager')->end()
                     ->scalarNode('path')->defaultValue('/logout')->end()
                     ->scalarNode('target')->defaultValue('/')->end()
@@ -266,8 +255,8 @@ class MainConfiguration implements ConfigurationInterface
                     ->arrayNode('delete_cookies')
                         ->normalizeKeys(false)
                         ->beforeNormalization()
-                            ->ifTrue(function ($v) { return \is_array($v) && \is_int(key($v)); })
-                            ->then(function ($v) { return array_map(function ($v) { return ['name' => $v]; }, $v); })
+                            ->ifTrue(fn ($v) => \is_array($v) && \is_int(key($v)))
+                            ->then(fn ($v) => array_map(fn ($v) => ['name' => $v], $v))
                         ->end()
                         ->useAttributeAsKey('name')
                         ->prototype('array')
@@ -276,6 +265,7 @@ class MainConfiguration implements ConfigurationInterface
                                 ->scalarNode('domain')->defaultNull()->end()
                                 ->scalarNode('secure')->defaultFalse()->end()
                                 ->scalarNode('samesite')->defaultNull()->end()
+                                ->scalarNode('partitioned')->defaultFalse()->end()
                             ->end()
                         ->end()
                     ->end()
@@ -429,12 +419,12 @@ class MainConfiguration implements ConfigurationInterface
                     ->prototype('array')
                         ->canBeUnset()
                         ->performNoDeepMerging()
-                        ->beforeNormalization()->ifString()->then(function ($v) { return ['algorithm' => $v]; })->end()
+                        ->beforeNormalization()->ifString()->then(fn ($v) => ['algorithm' => $v])->end()
                         ->children()
                             ->scalarNode('algorithm')
                                 ->cannotBeEmpty()
                                 ->validate()
-                                    ->ifTrue(function ($v) { return !\is_string($v); })
+                                    ->ifTrue(fn ($v) => !\is_string($v))
                                     ->thenInvalid('You must provide a string value.')
                                 ->end()
                             ->end()

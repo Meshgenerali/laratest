@@ -16,15 +16,16 @@ use Symfony\Bundle\SecurityBundle\Security\FirewallConfig;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\LogicException;
 use Symfony\Component\Security\Core\Exception\LogoutException;
-use Symfony\Component\Security\Core\Security as LegacySecurity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 use Symfony\Component\Security\Http\ParameterBagUtils;
-use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Contracts\Service\ServiceProviderInterface;
 
 /**
@@ -36,15 +37,35 @@ use Symfony\Contracts\Service\ServiceProviderInterface;
  *
  * @final
  */
-class Security extends LegacySecurity
+class Security implements AuthorizationCheckerInterface
 {
-    public const ACCESS_DENIED_ERROR = SecurityRequestAttributes::ACCESS_DENIED_ERROR;
-    public const AUTHENTICATION_ERROR = SecurityRequestAttributes::AUTHENTICATION_ERROR;
-    public const LAST_USERNAME = SecurityRequestAttributes::LAST_USERNAME;
+    public function __construct(
+        private readonly ContainerInterface $container,
+        private readonly array $authenticators = [],
+    ) {
+    }
 
-    public function __construct(private readonly ContainerInterface $container, private readonly array $authenticators = [])
+    public function getUser(): ?UserInterface
     {
-        parent::__construct($container, false);
+        if (!$token = $this->getToken()) {
+            return null;
+        }
+
+        return $token->getUser();
+    }
+
+    /**
+     * Checks if the attributes are granted against the current authentication token and optionally supplied subject.
+     */
+    public function isGranted(mixed $attributes, mixed $subject = null): bool
+    {
+        return $this->container->get('security.authorization_checker')
+            ->isGranted($attributes, $subject);
+    }
+
+    public function getToken(): ?TokenInterface
+    {
+        return $this->container->get('security.token_storage')->getToken();
     }
 
     public function getFirewallConfig(Request $request): ?FirewallConfig
@@ -53,13 +74,14 @@ class Security extends LegacySecurity
     }
 
     /**
-     * @param UserInterface $user              The user to authenticate
-     * @param string|null   $authenticatorName The authenticator name (e.g. "form_login") or service id (e.g. SomeApiKeyAuthenticator::class) - required only if multiple authenticators are configured
-     * @param string|null   $firewallName      The firewall name - required only if multiple firewalls are configured
+     * @param UserInterface    $user              The user to authenticate
+     * @param string|null      $authenticatorName The authenticator name (e.g. "form_login") or service id (e.g. SomeApiKeyAuthenticator::class) - required only if multiple authenticators are configured
+     * @param string|null      $firewallName      The firewall name - required only if multiple firewalls are configured
+     * @param BadgeInterface[] $badges            Badges to add to the user's passport
      *
      * @return Response|null The authenticator success response if any
      */
-    public function login(UserInterface $user, ?string $authenticatorName = null, ?string $firewallName = null): ?Response
+    public function login(UserInterface $user, ?string $authenticatorName = null, ?string $firewallName = null, array $badges = []): ?Response
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
         if (null === $request) {
@@ -76,7 +98,7 @@ class Security extends LegacySecurity
 
         $this->container->get('security.user_checker')->checkPreAuth($user);
 
-        return $this->container->get('security.authenticator.managers_locator')->get($firewallName)->authenticateUser($user, $authenticator, $request);
+        return $this->container->get('security.authenticator.managers_locator')->get($firewallName)->authenticateUser($user, $authenticator, $request, $badges);
     }
 
     /**

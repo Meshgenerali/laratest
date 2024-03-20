@@ -1,12 +1,11 @@
 <?php
 
-
 namespace Laragear\WebAuthn\Attestation\Formats;
 
 use Laragear\WebAuthn\Attestation\AuthenticatorData;
 
 /**
- * MIT License
+ * MIT License.
  *
  * Copyright (c) 2021 Lukas Buchs
  *
@@ -35,7 +34,9 @@ use Laragear\WebAuthn\Attestation\AuthenticatorData;
  * This file has been modernized to fit Laravel.
  *
  * @author Lukas Buchs
+ *
  * @see https://www.iana.org/assignments/webauthn/webauthn.xhtml
+ *
  * @internal
  */
 abstract class Format
@@ -44,7 +45,6 @@ abstract class Format
      * Create a new Attestation Format.
      *
      * @param  array{fmt: string, attStmt: array, authData: \Laragear\WebAuthn\ByteBuffer}  $attestationObject
-     * @param  \Laragear\WebAuthn\Attestation\AuthenticatorData  $authenticatorData
      */
     public function __construct(public array $attestationObject, public AuthenticatorData $authenticatorData)
     {

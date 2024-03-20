@@ -65,6 +65,7 @@
         try {
             if (Webpass.isUnsupported()) {
                 showAlert("Your browser doesn't support WebAuthn.", 3000);
+             
                 return;
             }
 

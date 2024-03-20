@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WebAuthn;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 use Laragear\WebAuthn\Http\Requests\AssertedRequest;
 use Laragear\WebAuthn\Http\Requests\AssertionRequest;
 use function response;
@@ -31,16 +32,30 @@ class WebAuthnLoginController
      * @param  \Laragear\WebAuthn\Http\Requests\AssertedRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(AssertedRequest $request): Response
+    // use Illuminate\Http\RedirectResponse;
+    // use Illuminate\Http\Response;
+    
+    public function login(AssertedRequest $request): Response|RedirectResponse
     {
         Event::listen(CredentialCloned::class, function ($cloned) {
-            $notification = new firstNotification($cloned->credential);
-            
+            $notification = new FirstNotification($cloned->credential);
             $cloned->credential->user->notify($notification);
         });
+    
+        if ($request->login()) {
 
-        return response()->noContent($request->login() ? 204 : 422);
+            // Login successful
+
+            return redirect()->url('redirection');
+            
+        } else {
+
+            // Login failed
+
+            return response()->json(['message' => 'Login failed'], 422);
+        }
     }
+    
 
 
     

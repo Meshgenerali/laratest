@@ -8,12 +8,13 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 
+use function method_exists;
+
 /**
  * @internal
  */
 class WebAuthnServiceProvider extends ServiceProvider
 {
-    public const ROUTES = __DIR__.'/../routes/webauthn.php';
     public const CONTROLLERS = __DIR__.'/../stubs/controllers';
     public const CONFIG = __DIR__.'/../config/webauthn.php';
     public const MIGRATIONS = __DIR__.'/../database/migrations';
@@ -23,6 +24,7 @@ class WebAuthnServiceProvider extends ServiceProvider
      * Register the service provider.
      *
      * @return void
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function register(): void
@@ -32,19 +34,23 @@ class WebAuthnServiceProvider extends ServiceProvider
         $this->registerUser();
 
         $this->registerUserProvider();
+
+        Models\WebAuthnCredential::$useTable = 'webauthn_credentials';
     }
 
     /**
      * Boot the service provider.
      *
      * @return void
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function boot(): void
     {
+        $this->commands(Console\WebAuthnInstallCommand::class);
+
         if ($this->app->runningInConsole()) {
-            $this->publishesMigrations(static::MIGRATIONS);
-            $this->publishes([static::ROUTES => $this->app->basePath('routes/webauthn.php')], 'routes');
+            $this->publishesPackageMigrations(static::MIGRATIONS);
             $this->publishes([static::CONFIG => $this->app->configPath('webauthn.php')], 'config');
             // @phpstan-ignore-next-line
             $this->publishes([static::CONTROLLERS => $this->app->path('Http/Controllers/WebAuthn')], 'controllers');
@@ -55,13 +61,20 @@ class WebAuthnServiceProvider extends ServiceProvider
     /**
      * Publishes migrations from the given path.
      *
-     * @param  array|string  $paths
-     * @param  string  $groups
-     * @return void
+     * @param  string[]|string  $paths
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function publishesMigrations(array|string $paths, string $groups = 'migrations'): void
+    protected function publishesPackageMigrations(array|string $paths, string $groups = 'migrations'): void
     {
+        if (method_exists(static::class, 'publishesMigrations')) {
+            foreach ((array) $paths as $path) {
+                $this->publishesMigrations([$path => $this->app->databasePath('migrations/')], 'migrations');
+            }
+
+            return;
+        }
+
         $prefix = now()->format('Y_m_d_His');
 
         $files = [];
@@ -72,7 +85,9 @@ class WebAuthnServiceProvider extends ServiceProvider
             $files[$file->getRealPath()] = $this->app->databasePath("migrations/{$prefix}_$filename");
         }
 
-        $this->publishes($files, $groups);
+        method_exists($this, 'publishesMigrations')
+            ? $this->publishesMigrations($files, $groups)
+            : $this->publishes($files, $groups);
     }
 
     /**
@@ -96,6 +111,7 @@ class WebAuthnServiceProvider extends ServiceProvider
      * Extends the Authentication Factory with a WebAuthn Eloquent-Compatible User Provider.
      *
      * @return void
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function registerUserProvider(): void

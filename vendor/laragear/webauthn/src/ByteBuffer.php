@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use OutOfBoundsException;
 use Stringable;
+
 use function base64_decode;
 use function base64_encode;
 use function bin2hex;
@@ -23,7 +24,7 @@ use function substr;
 use function unpack;
 
 /**
- * MIT License
+ * MIT License.
  *
  * Copyright (c) 2018 Thomas Bleeker
  *
@@ -75,15 +76,13 @@ use function unpack;
  *
  * @author Lukas Buchs
  * @author Thomas Bleeker
+ *
  * @internal
  */
 class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 {
     /**
-     * Create a new ByteBuffer
-     *
-     * @param  string  $binaryData
-     * @param  int  $dataLength
+     * Create a new ByteBuffer.
      */
     final public function __construct(protected string $binaryData, protected int $dataLength = 0)
     {
@@ -92,8 +91,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the length of the ByteBuffer data.
-     *
-     * @return int
      */
     public function getDataLength(): int
     {
@@ -102,8 +99,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Check if the length of the data is greater than zero.
-     *
-     * @return bool
      */
     public function hasLength(): bool
     {
@@ -112,18 +107,14 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Check if the length of the data is zero.
-     *
-     * @return bool
      */
     public function hasNoLength(): bool
     {
-        return !$this->hasLength();
+        return ! $this->hasLength();
     }
 
     /**
      * Returns the binary string verbatim.
-     *
-     * @return string
      */
     public function getBinaryString(): string
     {
@@ -132,9 +123,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Check if both Byte Buffers are equal using `hash_equals`.
-     *
-     * @param  \Laragear\WebAuthn\ByteBuffer|string  $buffer
-     * @return bool
      */
     public function hashEqual(self|string $buffer): bool
     {
@@ -147,9 +135,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Check if both Byte Buffers are not equal using `hash_equals`.
-     *
-     * @param  \Laragear\WebAuthn\ByteBuffer|string  $buffer
-     * @return bool
      */
     public function hashNotEqual(self|string $buffer): bool
     {
@@ -158,10 +143,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns a certain portion of these bytes.
-     *
-     * @param  int  $offset
-     * @param  int|null  $length
-     * @return string
      */
     public function getBytes(int $offset = 0, int $length = null): string
     {
@@ -176,13 +157,10 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single byte.
-     *
-     * @param  int  $offset
-     * @return int
      */
     public function getByteVal(int $offset = 0): int
     {
-        if (!$byte = $this->binaryData[$offset] ?? null) {
+        if (! $byte = $this->binaryData[$offset] ?? null) {
             throw new InvalidArgumentException('ByteBuffer: Invalid offset');
         }
 
@@ -191,9 +169,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single unsigned 16-bit integer.
-     *
-     * @param  int  $offset
-     * @return int
      */
     public function getUint16Val(int $offset = 0): int
     {
@@ -206,9 +181,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single unsigned 32-bit integer.
-     *
-     * @param  int  $offset
-     * @return int
      */
     public function getUint32Val(int $offset = 0): int
     {
@@ -228,9 +200,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single unsigned 64-bit integer.
-     *
-     * @param  int  $offset
-     * @return int
      */
     public function getUint64Val(int $offset): int
     {
@@ -254,17 +223,14 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single 16-bit float.
-     *
-     * @param  int  $offset
-     * @return float
      */
     public function getHalfFloatVal(int $offset = 0): float
     {
         // FROM spec pseudo decode_half(unsigned char *halfp)
         $half = $this->getUint16Val($offset);
 
-        $exp = ($half >> 10) & 0x1f;
-        $mant = $half & 0x3ff;
+        $exp = ($half >> 10) & 0x1F;
+        $mant = $half & 0x3FF;
 
         if ($exp === 0) {
             $val = $mant * (2 ** -24);
@@ -279,9 +245,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single 32-bit float.
-     *
-     * @param  int  $offset
-     * @return float
      */
     public function getFloatVal(int $offset = 0): float
     {
@@ -294,23 +257,19 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns the value of a single 64-bit float.
-     *
-     * @param  int  $offset
-     * @return float
      */
     public function getDoubleVal(int $offset = 0): float
     {
         if ($offset < 0 || ($offset + 8) > $this->dataLength) {
             throw new InvalidArgumentException('ByteBuffer: Invalid offset');
         }
+
         return unpack('E', $this->binaryData, $offset)[1];
     }
 
     /**
      * Transforms the ByteBuffer JSON into a generic Object.
      *
-     * @param  int  $jsonFlags
-     * @return object
      * @throws \JsonException
      */
     public function toObject(int $jsonFlags = 0): object
@@ -320,8 +279,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns a Base64 URL representation of the byte buffer.
-     *
-     * @return string
      */
     public function toBase64Url(): string
     {
@@ -330,8 +287,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Specify data which should be serialized to JSON.
-     *
-     * @return string
      */
     public function jsonSerialize(): string
     {
@@ -340,8 +295,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Returns a hexadecimal representation of the ByteBuffer.
-     *
-     * @return string
      */
     public function toHex(): string
     {
@@ -349,9 +302,7 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
     }
 
     /**
-     * object to string
-     *
-     * @return string
+     * Returns string representation of the object.
      */
     public function __toString(): string
     {
@@ -360,9 +311,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Convert the object to its JSON representation.
-     *
-     * @param  int  $options
-     * @return string
      */
     public function toJson($options = 0): string
     {
@@ -380,9 +328,9 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
     }
 
     /**
-     * Serializable-Interface
+     * Unserializes the data into this object instance.
      *
-     * @param  array  $data
+     * @param  array{binaryData: string}  $data
      */
     public function __unserialize(array $data): void
     {
@@ -392,9 +340,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Create a ByteBuffer from a BASE64 URL encoded string.
-     *
-     * @param  string  $base64url
-     * @return static
      */
     public static function fromBase64Url(string $base64url): static
     {
@@ -407,9 +352,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Create a ByteBuffer from a BASE64 encoded string.
-     *
-     * @param  string  $base64
-     * @return static
      */
     public static function fromBase64(string $base64): static
     {
@@ -425,9 +367,6 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Create a ByteBuffer from a hexadecimal string.
-     *
-     * @param  string  $hex
-     * @return static
      */
     public static function fromHex(string $hex): static
     {
@@ -439,10 +378,9 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
     }
 
     /**
-     * Create a random ByteBuffer
+     * Create a random ByteBuffer.
      *
-     * @param  int  $length
-     * @return static
+     * @throws \Random\RandomException
      */
     public static function makeRandom(int $length): static
     {
@@ -451,22 +389,16 @@ class ByteBuffer implements JsonSerializable, Jsonable, Stringable
 
     /**
      * Decodes a BASE64 URL string.
-     *
-     * @param  string  $data
-     * @return string|false
      */
-    protected static function decodeBase64Url(string $data): string|false
+    public static function decodeBase64Url(string $data): string|false
     {
         return base64_decode(strtr($data, '-_', '+/').str_repeat('=', 3 - (3 + strlen($data)) % 4));
     }
 
     /**
      * Encodes a BASE64 URL string.
-     *
-     * @param  string  $data
-     * @return string|false
      */
-    protected static function encodeBase64Url(string $data): string|false
+    public static function encodeBase64Url(string $data): string|false
     {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }

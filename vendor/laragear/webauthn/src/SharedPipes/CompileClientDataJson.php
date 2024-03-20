@@ -8,8 +8,9 @@ use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Attestation\Validator\AttestationValidation;
 use Laragear\WebAuthn\ByteBuffer;
 use Laragear\WebAuthn\ClientDataJson;
-use function base64_decode;
+
 use function json_decode;
+
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -22,9 +23,6 @@ abstract class CompileClientDataJson
     /**
      * Handle the incoming WebAuthn Ceremony Validation.
      *
-     * @param  \Laragear\WebAuthn\Assertion\Validator\AssertionValidation|\Laragear\WebAuthn\Attestation\Validator\AttestationValidation  $validation
-     * @param  \Closure  $next
-     * @return mixed
      * @throws \Laragear\WebAuthn\Exceptions\AttestationException
      * @throws \Laragear\WebAuthn\Exceptions\AssertionException
      */
@@ -32,18 +30,21 @@ abstract class CompileClientDataJson
     {
         try {
             $object = json_decode(
-                base64_decode($validation->request->json('response.clientDataJSON', '')), false, 32, JSON_THROW_ON_ERROR
+                ByteBuffer::decodeBase64Url($validation->request->json('response.clientDataJSON', '')),
+                false, 32, JSON_THROW_ON_ERROR
             );
         } catch (JsonException) {
             static::throw($validation, 'Client Data JSON is invalid or malformed.');
         }
 
-        if (!$object) {
+        if (! $object) {
             static::throw($validation, 'Client Data JSON is empty.');
         }
 
+        $object = (object) $object;
+
         foreach (['type', 'origin', 'challenge'] as $key) {
-            if (!isset($object->{$key})) {
+            if (! isset($object->{$key})) {
                 static::throw($validation, "Client Data JSON does not contain the [$key] key.");
             }
         }

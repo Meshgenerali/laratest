@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Config\Repository;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Attestation\Validator\AttestationValidation;
+
 use function parse_url;
 
 abstract class CheckOriginSecure
@@ -14,8 +15,6 @@ abstract class CheckOriginSecure
 
     /**
      * Create a new pipe instance.
-     *
-     * @param  \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(protected Repository $config)
     {
@@ -24,20 +23,16 @@ abstract class CheckOriginSecure
 
     /**
      * Handle the incoming WebAuthn Ceremony Validation.
-     *
-     * @param  \Laragear\WebAuthn\Attestation\Validator\AttestationValidation|\Laragear\WebAuthn\Assertion\Validator\AssertionValidation  $validation
-     * @param  \Closure  $next
-     * @return mixed
      */
     public function handle(AttestationValidation|AssertionValidation $validation, Closure $next): mixed
     {
-        if (!$validation->clientDataJson->origin) {
+        if (! $validation->clientDataJson->origin) {
             static::throw($validation, 'Response has an empty origin.');
         }
 
         $origin = parse_url($validation->clientDataJson->origin);
 
-        if (!$origin || !isset($origin['host'], $origin['scheme'])) {
+        if (! $origin || ! isset($origin['host'], $origin['scheme'])) {
             static::throw($validation, 'Response origin is invalid.');
         }
 

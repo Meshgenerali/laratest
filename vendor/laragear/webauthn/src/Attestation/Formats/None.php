@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Laragear\WebAuthn\Attestation\Formats;
 
 /**
@@ -8,5 +7,5 @@ namespace Laragear\WebAuthn\Attestation\Formats;
  */
 class None extends Format
 {
-
+    //
 }

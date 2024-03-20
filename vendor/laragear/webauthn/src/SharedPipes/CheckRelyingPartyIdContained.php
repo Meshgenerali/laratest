@@ -7,8 +7,10 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Attestation\Validator\AttestationValidation;
+
 use function hash_equals;
 use function parse_url;
+
 use const PHP_URL_HOST;
 
 /**
@@ -20,8 +22,6 @@ abstract class CheckRelyingPartyIdContained
 
     /**
      * Create a new pipe instance.
-     *
-     * @param  \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(protected Repository $config)
     {
@@ -31,15 +31,12 @@ abstract class CheckRelyingPartyIdContained
     /**
      * Handle the incoming WebAuthn Ceremony Validation.
      *
-     * @param  \Laragear\WebAuthn\Attestation\Validator\AttestationValidation|\Laragear\WebAuthn\Assertion\Validator\AssertionValidation  $validation
-     * @param  \Closure  $next
-     * @return mixed
      * @throws \Laragear\WebAuthn\Exceptions\AssertionException
      * @throws \Laragear\WebAuthn\Exceptions\AttestationException
      */
     public function handle(AttestationValidation|AssertionValidation $validation, Closure $next): mixed
     {
-        if (!$host = parse_url($validation->clientDataJson->origin, PHP_URL_HOST)) {
+        if (! $host = parse_url($validation->clientDataJson->origin, PHP_URL_HOST)) {
             static::throw($validation, 'Relying Party ID is invalid.');
         }
 

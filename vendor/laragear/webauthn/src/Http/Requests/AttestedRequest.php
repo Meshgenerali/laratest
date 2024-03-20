@@ -8,6 +8,7 @@ use Laragear\WebAuthn\Attestation\Validator\AttestationValidator;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\Events\CredentialCreated;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+
 use function is_callable;
 
 /**
@@ -17,16 +18,11 @@ class AttestedRequest extends FormRequest
 {
     /**
      * The new credential instance.
-     *
-     * @var \Laragear\WebAuthn\Models\WebAuthnCredential
      */
     protected WebAuthnCredential $credential;
 
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @param  \Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable|null  $user
-     * @return bool
      */
     public function authorize(?WebAuthnAuthenticatable $user): bool
     {
@@ -53,7 +49,6 @@ class AttestedRequest extends FormRequest
     /**
      * Handle a passed validation attempt.
      *
-     * @return void
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function passedValidation(): void
@@ -66,10 +61,9 @@ class AttestedRequest extends FormRequest
     }
 
     /**
-     * Save and return the generated WebAuthn Credentials.
+     * Save the generated WebAuthn Credentials, and return its ID.
      *
-     * @param  array|callable  $saving
-     * @return string
+     * @param  array<string, mixed>|callable  $saving
      */
     public function save(array|callable $saving = []): string
     {

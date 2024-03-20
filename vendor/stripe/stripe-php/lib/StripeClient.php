@@ -18,10 +18,12 @@ namespace Stripe;
  * @property \Stripe\Service\BillingPortal\BillingPortalServiceFactory $billingPortal
  * @property \Stripe\Service\ChargeService $charges
  * @property \Stripe\Service\Checkout\CheckoutServiceFactory $checkout
+ * @property \Stripe\Service\Climate\ClimateServiceFactory $climate
  * @property \Stripe\Service\CountrySpecService $countrySpecs
  * @property \Stripe\Service\CouponService $coupons
  * @property \Stripe\Service\CreditNoteService $creditNotes
  * @property \Stripe\Service\CustomerService $customers
+ * @property \Stripe\Service\CustomerSessionService $customerSessions
  * @property \Stripe\Service\DisputeService $disputes
  * @property \Stripe\Service\EphemeralKeyService $ephemeralKeys
  * @property \Stripe\Service\EventService $events
@@ -59,6 +61,7 @@ namespace Stripe;
  * @property \Stripe\Service\SubscriptionScheduleService $subscriptionSchedules
  * @property \Stripe\Service\Tax\TaxServiceFactory $tax
  * @property \Stripe\Service\TaxCodeService $taxCodes
+ * @property \Stripe\Service\TaxIdService $taxIds
  * @property \Stripe\Service\TaxRateService $taxRates
  * @property \Stripe\Service\Terminal\TerminalServiceFactory $terminal
  * @property \Stripe\Service\TestHelpers\TestHelpersServiceFactory $testHelpers

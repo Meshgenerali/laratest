@@ -3,12 +3,14 @@
 namespace Laragear\WebAuthn\Auth;
 
 use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidator;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\Exceptions\AssertionException;
+
 use function class_implements;
 use function config;
 use function in_array;
@@ -24,11 +26,6 @@ class WebAuthnUserProvider extends EloquentUserProvider
 {
     /**
      * Create a new database user provider.
-     *
-     * @param  \Illuminate\Contracts\Hashing\Hasher  $hasher
-     * @param  string  $model
-     * @param  \Laragear\WebAuthn\Assertion\Validator\AssertionValidator  $validator
-     * @param  bool  $fallback
      */
     public function __construct(
         HasherContract $hasher,
@@ -42,7 +39,6 @@ class WebAuthnUserProvider extends EloquentUserProvider
     /**
      * Retrieve a user by the given credentials.
      *
-     * @param  array  $credentials
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function retrieveByCredentials(array $credentials)
@@ -74,10 +70,7 @@ class WebAuthnUserProvider extends EloquentUserProvider
     }
 
     /**
-     * Check if the credentials are for a public key signed challenge
-     *
-     * @param  array  $credentials
-     * @return bool
+     * Check if the credentials are for a public key signed challenge.
      */
     protected function isSignedChallenge(array $credentials): bool
     {
@@ -88,9 +81,6 @@ class WebAuthnUserProvider extends EloquentUserProvider
      * Validate a user against the given credentials.
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable|\Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable  $user
-     * @param  array  $credentials
-     *
-     * @return bool
      */
     public function validateCredentials($user, array $credentials): bool
     {
@@ -104,16 +94,13 @@ class WebAuthnUserProvider extends EloquentUserProvider
 
     /**
      * Validate the WebAuthn assertion.
-     *
-     * @param  \Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable  $user
-     * @return bool
      */
     protected function validateWebAuthn(WebAuthnAuthenticatable $user): bool
     {
         try {
             // When we hit this method, we already have the user for the credential, so we will
             // pass it to the Assertion Validation data, thus avoiding fetching it again.
-            $this->validator->send(new AssertionValidation(request(), user: $user))->thenReturn();
+            $this->validator->send(new AssertionValidation(request(), $user))->thenReturn();
         } catch (AssertionException $e) {
             // If we're debugging, like under local development, push the error to the logger.
             if (config('app.debug')) {
@@ -124,5 +111,15 @@ class WebAuthnUserProvider extends EloquentUserProvider
         }
 
         return true;
+    }
+
+    /**
+     * Rehash the user's password if required and supported.
+     */
+    public function rehashPasswordIfRequired(UserContract $user, array $credentials, bool $force = false): void
+    {
+        if (! $this->isSignedChallenge($credentials)) {
+            parent::rehashPasswordIfRequired($user, $credentials, $force);
+        }
     }
 }

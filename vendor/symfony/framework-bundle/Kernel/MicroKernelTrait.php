@@ -58,6 +58,7 @@ trait MicroKernelTrait
             $container->import($configDir.'/{services}_'.$this->environment.'.yaml');
         } else {
             $container->import($configDir.'/{services}.php');
+            $container->import($configDir.'/{services}_'.$this->environment.'.php');
         }
     }
 
@@ -84,7 +85,7 @@ trait MicroKernelTrait
         }
 
         if (false !== ($fileName = (new \ReflectionObject($this))->getFileName())) {
-            $routes->import($fileName, 'annotation');
+            $routes->import($fileName, 'attribute');
         }
     }
 
@@ -113,6 +114,15 @@ trait MicroKernelTrait
         return parent::getCacheDir();
     }
 
+    public function getBuildDir(): string
+    {
+        if (isset($_SERVER['APP_BUILD_DIR'])) {
+            return $_SERVER['APP_BUILD_DIR'].'/'.$this->environment;
+        }
+
+        return parent::getBuildDir();
+    }
+
     public function getLogDir(): string
     {
         return $_SERVER['APP_LOG_DIR'] ?? parent::getLogDir();
@@ -128,10 +138,7 @@ trait MicroKernelTrait
         }
     }
 
-    /**
-     * @return void
-     */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(function (ContainerBuilder $container) use ($loader) {
             $container->loadFromExtension('framework', [
